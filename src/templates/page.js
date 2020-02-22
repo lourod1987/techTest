@@ -1,56 +1,36 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { graphql } from 'gatsby'
-import Layout from '../components/Layout'
+import React, { Component } from "react";
+import { graphql } from "gatsby";
 
-export const PageTemplate = ({ title, content }) => {
-  return (
-    <section className="section section--gradient">
-      <div className="container">
-        <div className="columns">
-          <div className="column is-10 is-offset-1">
-            <div className="section">
-              <h2 className="title is-size-3 has-text-weight-bold is-bold-light">
-                {title}
-              </h2>
-              <div
-                className="content"
-                dangerouslySetInnerHTML={{ __html: content }}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  )
+class PageTemplate extends Component {
+    render() {
+        const siteMetadata = this.props.data.site.siteMetadata;
+        const currentPage = this.props.data.wordpressPage;
+
+        return (
+            <>
+                <h1 dangerouslySetInnerHTML={{__html: currentPage.title}}/>
+                <h1 dangerouslySetInnerHTML={{__html: currentPage.content}}/>
+            </>
+        )
+    }
 }
 
-PageTemplate.propTypes = {
-  title: PropTypes.string.isRequired,
-  content: PropTypes.string,
-}
 
-const Page = ({ data }) => {
-  const { wordpressPage: page } = data
+export default PageTemplate;
 
-  return (
-    <Layout>
-      <PageTemplate title={page.title} content={page.content} />
-    </Layout>
-  )
-}
-
-Page.propTypes = {
-  data: PropTypes.object.isRequired,
-}
-
-export default Page
 
 export const pageQuery = graphql`
-  query PageById($id: String!) {
-    wordpressPage(id: { eq: $id }) {
-      title
-      content
-    }
-  }
-`
+    query currentPageQuery($id: String!) {
+        wordpressPage(id: { eq: $id }) {
+            title
+            content
+            slug
+            date(formatString: "MMMM DD, YYYY")
+        }
+        site {
+           id
+           siteMetadata {
+               title
+           } 
+        }
+    }`
